@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SublimeChat</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-black text-white font-sans">
+  <div class="p-4 max-w-4xl mx-auto">
+    <header class="text-center py-8">
+      <h1 class="text-4xl font-bold text-yellow-400">SublimeChat</h1>
+      <p class="text-lg text-gray-300 mt-2">Seu plano de virada financeira começa aqui</p>
+    </header>
+
+    <main>
+      <!-- Coleta de dados -->
+      <section id="chat" class="mb-6">
+        <h2 class="text-2xl font-semibold mb-4">Responda para criarmos seu plano:</h2>
+        <div class="space-y-4">
+          <input id="renda" type="number" placeholder="Qual sua renda mensal?" class="w-full p-2 rounded bg-gray-800 text-white">
+          <input id="divida" type="number" placeholder="Quanto você deve atualmente?" class="w-full p-2 rounded bg-gray-800 text-white">
+          <input id="tempo" type="number" placeholder="Quanto tempo livre por dia (em minutos)?" class="w-full p-2 rounded bg-gray-800 text-white">
+          <input id="objetivo" type="text" placeholder="Qual seu objetivo (ex: comprar carro)?" class="w-full p-2 rounded bg-gray-800 text-white">
+          <button onclick="gerarPlano()" class="bg-yellow-400 text-black px-4 py-2 rounded font-bold">Gerar plano</button>
+        </div>
+      </section>
+
+      <!-- Plano gerado -->
+      <section id="plano" class="hidden bg-gray-900 p-4 rounded">
+        <h2 class="text-xl font-semibold mb-2">Seu Plano:</h2>
+        <pre id="planoTexto" class="text-white whitespace-pre-wrap"></pre>
+        <button onclick="baixarPDF()" class="mt-4 bg-yellow-500 text-black px-4 py-2 rounded">Baixar PDF</button>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function gerarPlano() {
+      const renda = parseFloat(document.getElementById('renda').value);
+      const divida = parseFloat(document.getElementById('divida').value);
+      const tempo = parseInt(document.getElementById('tempo').value);
+      const objetivo = document.getElementById('objetivo').value;
+
+      const meses = Math.ceil(divida / (renda * 0.3));
+      const plano = `Com uma renda de R$${renda}, sugerimos que você use 30% (R$${(renda*0.3).toFixed(2)}) para pagar dívidas.
+Com isso, levará aproximadamente ${meses} meses para quitar R$${divida}.
+
+Com seus ${tempo} minutos livres por dia, você pode gerar renda extra com:
+- Freelancer (design, redação, etc)
+- Aplicativos de tarefas
+- Venda de produtos online
+
+Objetivo final: ${objetivo}
+Após quitar a dívida, você poderá economizar R$${(renda*0.3).toFixed(2)} por mês e atingir seu objetivo em tempo recorde.`;
+
+      document.getElementById('planoTexto').innerText = plano;
+      document.getElementById('plano').classList.remove('hidden');
+    }
+
+    function baixarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const texto = document.getElementById('planoTexto').innerText;
+      const linhas = texto.split('\n');
+      linhas.forEach((linha, i) => {
+        doc.text(linha, 10, 10 + (i * 10));
+      });
+      doc.save('meu-plano-sublimechat.pdf');
+    }
+  </script>
+</body>
+</html>
