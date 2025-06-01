@@ -5,123 +5,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SublimeChat</title>
-  <style>
-    body { background-color: #000; color: #FFD700; font-family: Arial, sans-serif; padding: 20px; }
-    #chat-container { max-width: 700px; margin: auto; background: #111; padding: 20px; border-radius: 10px; }
-    #messages { height: 400px; overflow-y: auto; background: #222; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-    .message { margin: 8px 0; }
-    .user { color: #00FFAA; }
-    .bot { color: #FFD700; }
-    input, button { padding: 10px; font-size: 16px; margin-top: 5px; }
-    input { width: 70%; }
-    button { width: 28%; background: #FFD700; border: none; cursor: pointer; }
-    #plan { display: none; background: #333; padding: 15px; margin-top: 15px; border-radius: 10px; }
-    #download-btn { display: none; margin-top: 10px; background: #00FFAA; color: #000; border: none; padding: 10px; }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="chat-container">
-    <h2>SublimeChat - Seu plano de virada financeira</h2>
-    <div id="messages"></div>
-    <input id="userInput" placeholder="Fale comigo..." />
+  <div class="container">
+    <h1>SublimeChat 💬</h1>
+    <div id="chatBox" class="chat-box"></div>
+    <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
     <button onclick="sendMessage()">Enviar</button>
-
-    <div id="plan">
-      <h3>📊 Plano Financeiro Gerado:</h3>
-      <div id="planText"></div>
-      <button id="download-btn" onclick="downloadPlan()">Baixar em PDF</button>
-    </div>
+    <button onclick="downloadPDF()">📄 Baixar plano</button>
+    <button onclick="toggleSheet()">📊 Ver Planilha</button>
+    <div id="sheet" class="sheet" style="display:none;"></div>
   </div>
-
-  <script>
-    let state = {
-      renda: null,
-      divida: null,
-      objetivo: null,
-      tempo: null
-    };
-
-    const messages = document.getElementById("messages");
-    const input = document.getElementById("userInput");
-    const planDiv = document.getElementById("plan");
-    const planText = document.getElementById("planText");
-    const downloadBtn = document.getElementById("download-btn");
-
-    function appendMessage(sender, text, className) {
-      const div = document.createElement("div");
-      div.className = "message " + className;
-      div.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    function sendMessage() {
-      const text = input.value.trim();
-      if (!text) return;
-      appendMessage("Você", text, "user");
-      input.value = "";
-      getBotResponse(text);
-    }
-
-    function getBotResponse(msg) {
-      if (!state.renda) {
-        appendMessage("SublimeChat", "Quanto você ganha por mês?", "bot");
-        state.renda = msg.replace(/[^\d\,\.]/g, '');
-        return;
-      }
-
-      if (!state.divida) {
-        appendMessage("SublimeChat", "Qual o total das suas dívidas?", "bot");
-        state.divida = msg.replace(/[^\d\,\.]/g, '');
-        return;
-      }
-
-      if (!state.tempo) {
-        appendMessage("SublimeChat", "Quanto tempo livre você tem por dia (em horas, minutos, como quiser)?", "bot");
-        state.tempo = msg;
-        return;
-      }
-
-      if (!state.objetivo) {
-        appendMessage("SublimeChat", "Qual seu principal objetivo financeiro? (Ex: comprar casa, carro, viajar...)", "bot");
-        state.objetivo = msg;
-        gerarPlano();
-        return;
-      }
-
-      appendMessage("SublimeChat", "Seu plano já está pronto! Veja abaixo 👇", "bot");
-    }
-
-    function gerarPlano() {
-      const renda = parseFloat(state.renda.replace(",", "."));
-      const divida = parseFloat(state.divida.replace(",", "."));
-      const meses = Math.ceil(divida / (renda * 0.3));
-      const plano = `
-        - Renda mensal: R$${renda.toFixed(2)}<br>
-        - Dívida total: R$${divida.toFixed(2)}<br>
-        - Tempo livre: ${state.tempo}<br>
-        - Objetivo: ${state.objetivo}<br><br>
-        ➤ Use até 30% da sua renda (R$${(renda * 0.3).toFixed(2)}) para quitar dívidas.<br>
-        ➤ Em aproximadamente ${meses} mês(es), você estará livre das dívidas.<br>
-        ➤ Com seu tempo livre, vamos buscar formas de renda extra compatíveis.<br>
-        ➤ Após isso, foque em guardar dinheiro para: ${state.objetivo}.<br>
-      `;
-      planText.innerHTML = plano;
-      planDiv.style.display = "block";
-      downloadBtn.style.display = "inline-block";
-      appendMessage("SublimeChat", "Plano criado com sucesso! Está visível abaixo. ✨", "bot");
-    }
-
-    function downloadPlan() {
-      const text = planText.innerHTML.replace(/<br>/g, '\n');
-      const blob = new Blob([text], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'plano-financeiro.pdf';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
